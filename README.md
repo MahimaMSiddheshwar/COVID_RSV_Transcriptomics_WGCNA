@@ -28,60 +28,88 @@ This project compares the transcriptomic profiles of COVID-19 and Respiratory Sy
 ```
 COVID_RSV_Transcriptomics_WGCNA/
 ├── data/                          # Input data files
-│   ├── SraRunTable.csv           # Sample metadata (REQUIRED)
-│   └── gene_counts.txt           # From featureCounts (REQUIRED)
+│   └── SraRunTable.csv           # Sample metadata with 68 samples
 │
 ├── scripts/                       # Analysis scripts
-│   └── WGCNA.R                   # Main R analysis script
+│   └── WGCNA.R                   # Main R analysis script (fixed bugs)
 │
 ├── results/                       # Generated output files
-│   ├── merged_gene_counts.csv
-│   ├── normalized_counts.csv
-│   ├── Module_Assignments.csv
-│   ├── Top20_Overall_HubGenes.csv
-│   ├── Top10_HubGenes_Yellow.csv
-│   ├── Top10_HubGenes_Red.csv
-│   ├── Top100_Overall_HubGenes.csv
-│   ├── top_100_genes_RSV.csv
-│   └── overlap_genes.csv
+│   ├── Top100_Overall_HubGenes.csv      # Top 100 hub genes from WGCNA
+│   ├── top_100_genes_RSV.csv           # Top 100 differentially expressed genes (RSV analysis)
+│   └── overlap_genes.csv               # 3 shared hub genes: OASL, TXN, RBCK1
 │
-├── figures/                       # Generated figures
-│   ├── dendrogram.png
-│   ├── dendrogram_with_module_colors_2.pdf
-│   ├── heatmap_plot.png
-│   ├── heatmap_plot.pdf
-│   ├── heatmap_conditions_separate.png
-│   ├── heatmap_conditions_separate.pdf
-│   ├── heatmap_severity_separate.png
-│   ├── heatmap_severity_separate.pdf
-│   ├── heatmap_gender_separate.png
-│   ├── heatmap_gender_separate.pdf
-│   ├── heatmap_new_severity.png
-│   ├── heatmap_new_gender.png
-│   ├── heatmap_condition_new.png
-│   ├── Venndiagram_new.png
-│   ├── Rplot02.pdf
-│   ├── module_membership_distribution.png
-│   └── Final Report.pdf
+├── figures/                       # Generated figures and visualizations
+│   ├── Final Report.pdf                # Complete project report
+│   ├── Rplot02.pdf                     # Soft-threshold power selection plots
+│   ├── Venndiagram_new.png             # Venn diagram of overlapping genes
+│   ├── dendrogram.png                  # Gene clustering dendrogram with module colors
+│   ├── heatmap_condition_new.png       # Module-trait correlation (Condition)
+│   ├── heatmap_new_gender.png          # Module-trait correlation (Gender)
+│   └── heatmap_new_severity.png        # Module-trait correlation (Severity)
 │
 └── README.md                      # This file
 ```
 
 ---
 
-## **5. Required Files**  
+## **5. Results Files Description**
 
-### **Input Files** (Place in `data/` folder):  
-   - `data/SraRunTable.csv`: Metadata for samples.  
-   - `data/gene_counts.txt`: Gene count matrix from featureCounts.  
+### **results/Top100_Overall_HubGenes.csv**
+Contains the top 100 hub genes identified from WGCNA analysis with highest module membership scores. These genes are highly connected within their modules and represent key regulatory genes.
 
-### **Generated Outputs** (Saved in `results/` and `figures/`):
-   - **Results**: CSV files with gene counts, normalized counts, module assignments, hub genes
-   - **Figures**: Heatmaps, dendrograms, soft-threshold plots
+**Key hub genes include:**
+- IFI44L, XAF1, IFIT3 (Interferon response genes)
+- IRF7, OASL (Antiviral response)
+- TXN, RBCK1 (Shared with RSV)
+
+### **results/top_100_genes_RSV.csv**
+Contains differentially expressed genes from RSV analysis with statistical metrics:
+- **Columns**: Probe ID, adj.P.Val, P.Value, t-statistic, B-statistic, logFC, Gene ID, Gene symbol, Gene title
+- **Key genes**: IFI27, IGF2BP3, TPST2, HP, SLA2, CD1C, XK, GYPE, GYPB
+
+### **results/overlap_genes.csv**
+**3 shared hub genes** between COVID-19 and RSV:
+1. **OASL** - 2'-5'-oligoadenylate synthetase-like (antiviral defense)
+2. **TXN** - Thioredoxin (oxidative stress response)
+3. **RBCK1** - RanBP-type and C3HC4-type zinc finger containing 1 (immune regulation)
 
 ---
 
-## **6. Tools and Libraries**
+## **6. Figures Description**
+
+### **figures/Final Report.pdf**
+Complete project documentation with methodology, results, and conclusions.
+
+### **figures/Rplot02.pdf**
+Soft-threshold power selection plots showing:
+- Scale-free topology model fit (R²) vs power
+- Mean connectivity vs power
+- **Selected power: β = 14**
+
+### **figures/Venndiagram_new.png**
+Venn diagram showing overlap between COVID-19 and RSV hub genes, highlighting 3 shared genes.
+
+### **figures/dendrogram.png**
+Hierarchical clustering dendrogram of genes colored by module assignment. Shows 10+ distinct co-expression modules.
+
+### **figures/heatmap_condition_new.png**
+Module-trait correlation heatmap for **Condition** (Convalescent vs COVID-19 vs Healthy):
+- Red = positive correlation
+- Blue = negative correlation
+- Shows which modules are activated/suppressed in each condition
+
+### **figures/heatmap_new_gender.png**
+Module-trait correlation heatmap for **Gender** (Female vs Male):
+- Identifies sex-specific gene expression patterns
+
+### **figures/heatmap_new_severity.png**
+Module-trait correlation heatmap for **Severity** (Convalescent, Moderate, Severe, ICU, Healthy):
+- **MEyellow** and **MEgrey** modules strongly associated with severity
+- Key finding for disease progression biomarkers
+
+---
+
+## **7. Tools and Libraries**
 
 ### **Software/Modules**  
 | Tool                | Purpose                                  |  
@@ -102,9 +130,9 @@ COVID_RSV_Transcriptomics_WGCNA/
 
 ---
 
-## **7. Workflow**
+## **8. Workflow**
 
-### **Preprocessing Pipeline** (Shell scripts - not included)
+### **Preprocessing Pipeline**
 1. Download SRR files with SRA Toolkit
 2. Convert SRA to FASTQ with fasterq-dump
 3. Quality control with FastQC
@@ -112,7 +140,7 @@ COVID_RSV_Transcriptomics_WGCNA/
 5. Align to hg38 with HISAT2
 6. Quantify genes with featureCounts
 
-### **WGCNA Analysis** (R script)
+### **WGCNA Analysis**
 ```bash
 cd scripts
 Rscript WGCNA.R
@@ -126,42 +154,34 @@ source("scripts/WGCNA.R")
 
 ---
 
-## **8. WGCNA Parameters**
+## **9. WGCNA Parameters**
 
-- **Soft-threshold power**: 14 (selected for scale-free topology)
+- **Soft-threshold power**: 14 (selected for scale-free topology R² > 0.85)
 - **Network type**: Signed
 - **Min module size**: 30
 - **Merge cut height**: 0.25
 - **Hub gene threshold**: Module Membership > 0.90
 - **Variable genes**: Top 10,000 by variance
+- **Modules identified**: 10+ (yellow, grey, brown, tan, greenyellow, lightcyan, blue, purple, etc.)
 
 ---
 
-## **9. Outputs**
+## **10. Key Results Summary**
 
-### **Key Results**  
-1. **Hub Genes**:  
-   - `results/Top20_Overall_HubGenes.csv`
-   - `results/Top10_HubGenes_Yellow.csv`
-   - `results/Top10_HubGenes_Red.csv`
+### **Module-Trait Associations**
+- **MEyellow & MEgrey**: Strongly associated with COVID-19 severity
+- Condition-specific modules distinguish disease states
+- Gender-specific patterns identified
 
-2. **Module Assignments**:
-   - `results/Module_Assignments.csv`
+### **Hub Genes**
+- **100 hub genes** with highest module membership (>0.90)
+- **3 shared genes** (OASL, TXN, RBCK1) indicate conserved antiviral pathways
+- Interferon response genes dominate (IFI44L, IFIT3, IFIT1, RSAD2)
 
-3. **Shared Hub Genes**:
-   - `results/overlap_genes.csv`
-
-### **Visual Outputs**  
-- **Heatmaps**: Module-trait correlations (Condition, Gender, Severity)
-- **Dendrogram**: Gene clustering with module colors
-- **Soft-threshold Plots**: Scale-free topology analysis
-
----
-
-## **10. Results Summary**  
-- **MEyellow** and **MEgrey** modules are strongly associated with COVID-19 severity.  
-- Shared hub genes (**OASL**, **TXN**, and **RBCK1**) indicate conserved antiviral and immune response pathways between COVID-19 and RSV.  
-- Limited overlap of hub genes highlights unique molecular pathways for each disease.
+### **Biological Interpretation**
+- Shared hub genes suggest common immune mechanisms between COVID-19 and RSV
+- Unique hub genes indicate disease-specific pathways
+- Potential drug targets and diagnostic biomarkers identified
 
 ---
 
@@ -182,7 +202,8 @@ install.packages(c("pheatmap", "ggplot2", "gridExtra"))
 - **Working Directory**: The R script assumes you're in the project root folder
 - **Memory**: WGCNA requires ~32GB RAM for 10,000 genes
 - **Runtime**: Full WGCNA analysis takes ~30-60 minutes
-- **Storage**: Results and figures are ~50MB total
+- **Input Required**: Place `gene_counts.txt` in `data/` folder before running
+- **Bugs Fixed**: Corrected undefined variable error and removed duplicate code lines
 
 ---
 
