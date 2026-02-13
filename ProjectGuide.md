@@ -1,4 +1,4 @@
-## **Step-by-Step of Project overview**
+## **Step-by-Step Project overview**
 
 1. **Defined the biological question**  
    - Compare host transcriptomic responses in COVID-19 vs RSV.  
